@@ -6,25 +6,21 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - shared_network
     environment:
       - POSTGRES_PASSWORD=postgres_password
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
 
-  frontend:
-    build:
-      dockerfile: Dockerfile
-      context: ./frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - api
   api:
     build:
       dockerfile: Dockerfile
       context: ./backend
     ports:
       - "8080:8080"
+    networks:
+      - shared_network
     environment:
       - PGUSER=postgres
       - PGHOST=postgres
@@ -33,3 +29,28 @@ services:
       - PGPORT=5432
     depends_on:
       - postgres
+
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+      network: host
+      args:
+        API_HOST: host.docker.internal
+        API_PORT: 8080
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - NEXT_PUBLIC_API_HOST=api
+      - NEXT_PUBLIC_API_PORT=8080
+      - SILENCE_LOG=true
+    networks:
+      - shared_network
+    depends_on:
+      - api
+networks:
+  shared_network:
+    name: my-shared-network
+    driver: bridge

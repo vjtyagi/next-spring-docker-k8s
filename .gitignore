@@ -45,3 +45,6 @@ target/
 !**/src/test/**/target/
 *.class
 postgres-data/
+
+
+logs/

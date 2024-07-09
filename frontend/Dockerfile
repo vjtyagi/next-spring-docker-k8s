@@ -22,6 +22,28 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+
+RUN mkdir -p /app/logs
+RUN touch /app/logs/app.log
+RUN chmod 777 /app/logs/app.log
+
+
+
+# COPY ./wait-for-it.sh /usr/local/bin/wait-for-it.sh
+# RUN chmod +x /usr/local/bin/wait-for-it.sh
+
+ARG API_HOST
+ARG API_PORT
+
+ENV API_HOST=${API_HOST}
+ENV API_PORT=${API_PORT}
+
+# RUN /usr/local/bin/wait-for-it.sh || { echo "wait-for-it.sh failed with exit code $?"; exit 1; }
+
+
+
+
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -61,6 +83,8 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT 3000
+
+
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
