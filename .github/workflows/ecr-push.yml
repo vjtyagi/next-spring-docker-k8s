@@ -39,9 +39,9 @@ jobs:
             docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
 
             #start postgres container
-            docker run -p 5432:5432 --env-file=./backend/.env postgres:latest
+            docker run -p 5432:5432 --env-file=./backend/.env postgres:latest -d
             #start backend container
-            docker run --rm -p 8080:8080 --env-file=./.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+            docker run --rm -p 8080:8080 --env-file=./.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG -d
 
             #build frontend image
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
