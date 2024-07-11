@@ -53,13 +53,12 @@ jobs:
             #start postgres container
             docker run -d --rm --name pg-container  -p 5432:5432 --env-file=./backend/.env postgres:latest 
             #start backend container
-            docker run -d --rm --name backend-container  --network host   -p 8080:8080 --env-file=./backend/.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+            docker run -d --rm --name backend-container    -p 8080:8080 --env-file=./backend/.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
             
-            # GET HOST IP
-            HOST_IP=$(hostname -I | awk '{print $1}')
+
             
             #build frontend image
-            docker build  --build-arg API_HOST=$HOST_IP --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
+            docker build  --build-arg API_HOST=172.17.0.1 --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
 
             #stop pg-container, backend-container 
             docker stop pg-container 
