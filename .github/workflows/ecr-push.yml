@@ -48,14 +48,14 @@ jobs:
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG backend/
 
             #start postgres container
-            docker run -d --rm --name pg-container -p 5432:5432 --env-file=./backend/.env postgres:latest 
+            docker run -d --rm --name pg-container --network mynetwork  -p 5432:5432 --env-file=./backend/.env postgres:latest 
             #start backend container
-            docker run -d --rm --name backend-container --add-host=host.docker.internal:host-gateway -p 8080:8080 --env-file=./backend/.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+            docker run -d --rm --name backend-container --network mynetwork --network-alias backend   -p 8080:8080 --env-file=./backend/.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
             
-            sleep 30
+      
             
             #build frontend image
-            docker build --build-arg API_HOST=host.docker.internal --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
+            docker build --network mynetwork  --build-arg API_HOST=backend --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
 
             #stop pg-container, backend-container 
             docker stop pg-container 
