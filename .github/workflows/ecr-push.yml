@@ -50,12 +50,17 @@ jobs:
 
 
             #start postgres container
-            docker run -p 5432:5432 --env-file=./backend/.env postgres:latest -d
+            docker run -d --rm --name pg-container -p 5432:5432 --env-file=./backend/.env postgres:latest 
             #start backend container
-            docker run --rm -p 8080:8080 --env-file=./.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG -d
+            docker run -d --rm --name backend-container -p 8080:8080 --env-file=./.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
 
             #build frontend image
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
 
+            #stop pg-container, backend-container 
+            docker stop pg-container 
+            docker stop backend-container
+            docker rm pg-container 
+            docker rm backend-container
 
             
