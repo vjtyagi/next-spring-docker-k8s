@@ -22,9 +22,19 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Create ECR repositories if they don't exist
         run: |
-          aws ecr describe-repositories --repository-names demo-frontend demo-backend || \
-          aws ecr create-repository --repository-name demo-frontend && \
-          aws ecr create-repository --repository-name demo-backend
+          if ! aws ecr describe-repositories --repository-names demo-frontend &>/dev/null; then
+            echo "Creating demo-frontend repository"
+            aws ecr create-repository --repository-name demo-frontend
+          else
+            echo "demo-frontend repository already exists"
+          fi
+          
+          if ! aws ecr describe-repositories --repository-names demo-backend &>/dev/null; then
+            echo "Creating demo-backend repository"
+            aws ecr create-repository --repository-name demo-backend
+          else
+            echo "demo-backend repository already exists"
+          fi
 
 
       - name: Build Tag and push images to Amazon ECR
