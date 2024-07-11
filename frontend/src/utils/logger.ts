@@ -14,10 +14,10 @@ const logger = createLogger({
   ),
   defaultMeta: { service: "next-api" },
   transports: [
-    new transports.File({
-      filename: logFilePath,
-      silent: process.env.SILENCE_LOG === "true",
-    }),
+    // new transports.File({
+    //   filename: logFilePath,
+    //   silent: process.env.SILENCE_LOG === "true",
+    // }),
   ],
 });
 
