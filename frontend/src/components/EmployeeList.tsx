@@ -1,4 +1,5 @@
 import { getEmployeeData } from "@/utils/api";
+export const dynamic = "force-dynamic";
 
 interface Employee {
   id: number;
