@@ -58,7 +58,7 @@ jobs:
 
             
             #build frontend image
-            docker build --net=host --build-arg API_HOST=172.17.0.1 --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
+            docker build --network=host --build-arg API_HOST=172.17.0.1 --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
 
             #stop pg-container, backend-container 
             docker stop pg-container 
