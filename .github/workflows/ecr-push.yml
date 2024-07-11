@@ -20,6 +20,13 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+      - name: Create ECR repositories if they don't exist
+        run: |
+          aws ecr describe-repositories --repository-names demo-frontend demo-backend || \
+          aws ecr create-repository --repository-name demo-frontend && \
+          aws ecr create-repository --repository-name demo-backend
+
+
       - name: Build Tag and push images to Amazon ECR
         env:
           ECR_REGISTRY: ${{steps.login-ecr.outputs.registry}}
