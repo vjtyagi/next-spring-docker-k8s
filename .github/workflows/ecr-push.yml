@@ -53,7 +53,7 @@ jobs:
             docker run -d --rm --name backend-container -p 8080:8080 --env-file=./backend/.env $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
 
             #build frontend image
-            docker build --build-arg API_HOST=host.docker.internal --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
+            docker build --build-arg API_HOST=localhost --build-arg API_PORT=8080 -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG frontend/
 
             #stop pg-container, backend-container 
             docker stop pg-container 
