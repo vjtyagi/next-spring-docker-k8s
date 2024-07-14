@@ -80,8 +80,8 @@ jobs:
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
           kubectl apply -f k8s/deployment.yaml
-          kubectl set image deployments/frontend-deployment frontend=$ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
-          kubectl set image deployments/backend-deployment backend=$ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+          kubectl set image deployments/frontend-deployment frontend=$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
+          kubectl set image deployments/backend-deployment backend=$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
           sleep 20
           kubectl apply -f k8s/service.yaml
 
