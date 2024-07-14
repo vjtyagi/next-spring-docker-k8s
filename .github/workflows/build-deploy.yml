@@ -77,12 +77,17 @@ jobs:
           --from-literal=PGUSER=${{secrets.PGUSER}}
           --from-literal=PGPASSWORD=${{secrets.PGPASSWORD}}
       - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{steps.login-ecr.outputs.registry}}
+          ECR_REPOSITORY_FRONTEND: demo-frontend
+          ECR_REPOSITORY_BACKEND: demo-backend
+          IMAGE_TAG: ${{github.sha}}
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
           kubectl apply -f k8s/deployment.yaml
           echo "Image: $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG"
-          kubectl set image deployments/frontend-deployment frontend=$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
-          kubectl set image deployments/backend-deployment backend=$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+          kubectl set image deployments/frontend-deployment frontend=$ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
+          kubectl set image deployments/backend-deployment backend=$ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
           sleep 20
           kubectl apply -f k8s/service.yaml
 
