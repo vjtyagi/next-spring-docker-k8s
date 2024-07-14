@@ -1,0 +1,61 @@
+# Cluster IP service frontend
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: frontend-cluster-ip-service 
+spec:
+  type: ClusterIP 
+  selector:
+    component: frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+
+---
+# Cluster IP service backend
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: backend-cluster-ip-service 
+spec:
+  type: ClusterIP 
+  selector:
+    component: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+---
+# Cluster IP service Postgres
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: postgres-cluster-ip-service 
+spec:
+  type: ClusterIP 
+  selector:
+    component: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# Ingress Resource
+apiVersion: networking.k8s.io/v1
+kind: Ingress 
+metadata:
+  name: ingress-service 
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx 
+  rules:
+    - http:
+        paths:
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: frontend-cluster-ip-service
+                port:
+                  number: 3000

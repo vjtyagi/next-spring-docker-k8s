@@ -1,0 +1,134 @@
+#Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: frontend
+  template:
+    metadata:
+      labels:
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: vjunloc/next-frontend
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+          - name: NEXT_PUBLIC_API_HOST
+            value: backend-cluster-ip-service
+          - name: NEXT_PUBLIC_API_PORT
+            value: "8080"
+        ports:
+        - containerPort: 3000
+
+
+---
+#Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: backend
+  template:
+    metadata:
+      labels:
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        image: vjunloc/spring-backend
+        env:
+          - name: PGHOST
+            value: postgres-cluster-ip-service
+          - name: PGPORT
+            valueFrom:
+              secretKeyRef:
+                name: pgsecret 
+                key: PGPORT
+          - name: PGDATABASE
+            valueFrom:
+              secretKeyRef:
+                name: pgsecret 
+                key: PGDATABASE
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: pgsecret 
+                key: PGUSER
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pgsecret 
+                key: PGPASSWORD 
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        ports:
+        - containerPort: 8080
+
+---
+#Persistent Volume Claim
+apiVersion: v1 
+kind: PersistentVolumeClaim 
+metadata:
+  name: database-persistent-volume-claim 
+spec:
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+
+---
+#Postgres deployment
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: postgres-deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres 
+  template:
+    metadata:
+      labels:
+        component: postgres 
+    spec: 
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers: 
+        - name: postgres
+          image: postgres:13 
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres 
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword 
+                  key: PGPASSWORD 
+          ports:
+            - containerPort: 5432
