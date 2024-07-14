@@ -78,6 +78,7 @@ jobs:
           --from-literal=PGPASSWORD=${{secrets.PGPASSWORD}}
       - name: Deploy to EKS
         run: |
+          kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl set image deployments/frontend-deployment frontend=$ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
