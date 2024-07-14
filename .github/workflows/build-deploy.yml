@@ -59,10 +59,9 @@ jobs:
             docker push $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
       
       - name: Create Kube config 
-        uses: azure/k8s-set-context@v4
-        with:
-          method: kubeconfig
-          kubeconfig: ${{secrets.KUBE_CONFIG}}
+        run: |
+          mkdir ${HOME}/.kube
+          echo ${{secrets.KUBE_CONFIG}} | base64 --decode > ${HOME}/.kube/config
       - name: Create Kubectl Secrets 
         run: >
           kubectl create secret generic pgsecret 
