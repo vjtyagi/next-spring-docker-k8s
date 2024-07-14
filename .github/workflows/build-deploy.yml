@@ -62,6 +62,9 @@ jobs:
         run: |
           mkdir ${HOME}/.kube
           echo ${{secrets.KUBE_CONFIG}} | base64 --decode > ${HOME}/.kube/config
+      - name: Use Context 
+        run: kubectl config use-context EKS_CONTEXT
+
       - name: Create Kubectl Secrets 
         run: >
           kubectl get secret pgsecret &>/dev/null &&
