@@ -64,10 +64,14 @@ jobs:
           echo ${{secrets.KUBE_CONFIG}} | base64 --decode > ${HOME}/.kube/config
       - name: Create Kubectl Secrets 
         run: >
-          kubectl create secret generic pgsecret 
-          --from-literal=PGPORT=${{secrets.PGPORT}} 
-          --from-literal=PGDATABASE=${{secrets.PGDATABASE}} 
-          --from-literal=PGUSER=${{secrets.PGUSER}} 
+          kubectl get secret pgsecret &>/dev/null &&
+          echo "Updating existing pgsecret" &&
+          kubectl delete secret pgsecret ||
+          echo "Creating new pgsecret";
+          kubectl create secret generic pgsecret
+          --from-literal=PGPORT=${{secrets.PGPORT}}
+          --from-literal=PGDATABASE=${{secrets.PGDATABASE}}
+          --from-literal=PGUSER=${{secrets.PGUSER}}
           --from-literal=PGPASSWORD=${{secrets.PGPASSWORD}}
       - name: Deploy to EKS
         run: |
