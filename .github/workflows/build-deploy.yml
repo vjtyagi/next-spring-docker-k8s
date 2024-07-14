@@ -15,11 +15,11 @@ jobs:
         uses: azure/setup-kubectl@v3
         id: install
       - name: Create Kubectl Secrets 
-        run: |
-          kubectl create secret generic pgsecret \ 
-          --from-literal=PGPORT=${{secrets.PGPORT}} \
-          --from-literal=PGDATABASE=${{secrets.PGDATABASE}} \
-          --from-literal=PGUSER=${{secrets.PGUSER}} \
+        run: >
+          kubectl create secret generic pgsecret 
+          --from-literal=PGPORT=${{secrets.PGPORT}} 
+          --from-literal=PGDATABASE=${{secrets.PGDATABASE}} 
+          --from-literal=PGUSER=${{secrets.PGUSER}} 
           --from-literal=PGPASSWORD=$${{secrets.PGPASSWORD}}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
